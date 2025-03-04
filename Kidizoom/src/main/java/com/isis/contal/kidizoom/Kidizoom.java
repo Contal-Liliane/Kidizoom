@@ -11,6 +11,6 @@ package com.isis.contal.kidizoom;
 public class Kidizoom {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        System.out.println("APAGNAN!");
     }
 }
