@@ -4,16 +4,11 @@
  */
 package com.isis.contal.kidizoom;
 
-import javax.swing.SwingUtilities;
 
 /**
  *
- * @author lilia
+ * @author bapti
  */
-/*Baptiste Collard
-*/
-public class Pendu {
-     public static void main(String[] args) {
-        SwingUtilities.invokeLater(PenduGraphiqueManager::new);
-    }
+public class PenduMotsManager {
+    
 }
