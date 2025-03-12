@@ -9,7 +9,7 @@ public class MenuGeneral extends JFrame {
     private boolean ardoiseActive = false;
     private DessinNiveauFacile dessinFacile;
     private DessinNiveauDifficile dessinDifficile;
-
+    
     public MenuGeneral() {
         setTitle("Application Multi-Activités");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -1,11 +1,10 @@
 package com.isis.contal.kidizoom;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class DessinNiveauDifficile extends JFrame {
+public class DessinNiveauDifficile extends JPanel {
     private DrawPanel drawPanel;
     private JSlider eraserSlider, brushSizeSlider, eraserSizeSlider;
     private Color currentColor = Color.BLACK; // Couleur du pinceau
@@ -14,18 +13,21 @@ public class DessinNiveauDifficile extends JFrame {
     private int eraserSize = 20; // Taille de la gomme par défaut
 
     public DessinNiveauDifficile() {
-        setTitle("Ardoise Magique - Niveau Difficile");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
-        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
         
         // Conteneur principal
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.BLACK);
         
         // Zone de dessin blanche
-        drawPanel = new DrawPanel();
+        drawPanel = new DessinNiveauFacile.DrawPanel();
         mainPanel.add(drawPanel, BorderLayout.CENTER);
+        setPreferredSize(new Dimension(780, 500)); // Ajuste les dimensions selon tes besoins
+        
+        // Conteneur principal
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(Color.BLACK);
+        
         
         // Barre du haut : Sélection de couleur et gomme
         JPanel topPanel = new JPanel();
@@ -41,7 +43,7 @@ public class DessinNiveauDifficile extends JFrame {
             }
         });
         topPanel.add(colorChooserButton);
-
+        
         // Bouton gomme
         JButton eraseButton = new JButton("Gomme");
         eraseButton.addActionListener(e -> {
@@ -71,7 +73,7 @@ public class DessinNiveauDifficile extends JFrame {
             if (eraserSlider.getValue() == 100) {
                 drawPanel.clear();
                 eraserSlider.setValue(0);
-            }
+    }
         });
 
         bottomPanel.add(new JLabel("Taille du crayon:"));
@@ -92,7 +94,7 @@ public class DessinNiveauDifficile extends JFrame {
         private Graphics2D g2;
         
         public DrawPanel() {
-            setPreferredSize(new Dimension(600, 400));
+            setPreferredSize(new Dimension(780, 500));
             setBackground(Color.WHITE);
             addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
@@ -152,5 +154,5 @@ public class DessinNiveauDifficile extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new DessinNiveauDifficile().setVisible(true));
-    }
+}
 }
