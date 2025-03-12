@@ -6,8 +6,8 @@ package com.isis.contal.kidizoom;
 
 /**
  *
- * @author lilia
+ * @author bapti
  */
-public class Dessin {
+public class PenduDrawPanel {
     
 }
