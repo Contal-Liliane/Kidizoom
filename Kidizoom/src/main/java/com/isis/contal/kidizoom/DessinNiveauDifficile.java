@@ -1,8 +1,11 @@
+package com.isis.contal.kidizoom;
+
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class DessinNiveauFacile extends JFrame {
+public class DessinNiveauDifficile extends JFrame {
     private DrawPanel drawPanel;
     private JSlider eraserSlider, brushSizeSlider, eraserSizeSlider;
     private Color currentColor = Color.BLACK; // Couleur du pinceau
@@ -10,8 +13,8 @@ public class DessinNiveauFacile extends JFrame {
     private int brushSize = 10; // Taille du pinceau par défaut
     private int eraserSize = 20; // Taille de la gomme par défaut
 
-    public DessinNiveauFacile() {
-        setTitle("Ardoise Magique");
+    public DessinNiveauDifficile() {
+        setTitle("Ardoise Magique - Niveau Difficile");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -24,42 +27,20 @@ public class DessinNiveauFacile extends JFrame {
         drawPanel = new DrawPanel();
         mainPanel.add(drawPanel, BorderLayout.CENTER);
         
-        // Palette de couleurs
-        JPanel colorPanel = new JPanel();
-        colorPanel.setBackground(Color.GRAY);
+        // Barre du haut : Sélection de couleur et gomme
+        JPanel topPanel = new JPanel();
+        topPanel.setBackground(Color.GRAY);
 
-        JButton blackButton = new JButton("Noir");
-        blackButton.setBackground(Color.BLACK);
-        blackButton.setForeground(Color.WHITE);
-        blackButton.addActionListener(e -> {
-            currentColor = Color.BLACK;
-            erasing = false;
+        // Bouton pour choisir une couleur personnalisée
+        JButton colorChooserButton = new JButton("Choisir La Couleur");
+        colorChooserButton.addActionListener(e -> {
+            Color newColor = JColorChooser.showDialog(null, "Choisissez une couleur", currentColor);
+            if (newColor != null) {
+                currentColor = newColor;
+                erasing = false; // Assure que le pinceau est actif après le choix de couleur
+            }
         });
-        colorPanel.add(blackButton);
-
-        JButton redButton = new JButton("Rouge");
-        redButton.setBackground(Color.RED);
-        redButton.addActionListener(e -> {
-            currentColor = Color.RED;
-            erasing = false;
-        });
-        colorPanel.add(redButton);
-
-        JButton greenButton = new JButton("Vert");
-        greenButton.setBackground(Color.GREEN);
-        greenButton.addActionListener(e -> {
-            currentColor = Color.GREEN;
-            erasing = false;
-        });
-        colorPanel.add(greenButton);
-
-        JButton blueButton = new JButton("Bleu");
-        blueButton.setBackground(Color.BLUE);
-        blueButton.addActionListener(e -> {
-            currentColor = Color.BLUE;
-            erasing = false;
-        });
-        colorPanel.add(blueButton);
+        topPanel.add(colorChooserButton);
 
         // Bouton gomme
         JButton eraseButton = new JButton("Gomme");
@@ -67,11 +48,23 @@ public class DessinNiveauFacile extends JFrame {
             erasing = !erasing; // Alterner entre gomme et dessin
             eraseButton.setText(erasing ? "Dessiner" : "Gomme");
         });
-        colorPanel.add(eraseButton);
+        topPanel.add(eraseButton);
 
-        mainPanel.add(colorPanel, BorderLayout.NORTH);
+        mainPanel.add(topPanel, BorderLayout.NORTH);
         
-        // Slider pour effacer complètement
+        // Barre du bas : Sliders pour la taille du pinceau et gomme
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setBackground(Color.YELLOW);
+        bottomPanel.setLayout(new GridLayout(3, 2, 10, 5));
+
+        brushSizeSlider = new JSlider(1, 50, 10);
+        brushSizeSlider.setOrientation(JSlider.HORIZONTAL);
+        brushSizeSlider.addChangeListener(e -> brushSize = brushSizeSlider.getValue());
+
+        eraserSizeSlider = new JSlider(5, 50, 20);
+        eraserSizeSlider.setOrientation(JSlider.HORIZONTAL);
+        eraserSizeSlider.addChangeListener(e -> eraserSize = eraserSizeSlider.getValue());
+
         eraserSlider = new JSlider(0, 100, 0);
         eraserSlider.setOrientation(JSlider.HORIZONTAL);
         eraserSlider.addChangeListener(e -> {
@@ -81,27 +74,10 @@ public class DessinNiveauFacile extends JFrame {
             }
         });
 
-        // Slider pour changer la taille du crayon
-        brushSizeSlider = new JSlider(1, 50, 10);
-        brushSizeSlider.setOrientation(JSlider.HORIZONTAL);
-        brushSizeSlider.addChangeListener(e -> brushSize = brushSizeSlider.getValue());
-
-        // Slider pour changer la taille de la gomme
-        eraserSizeSlider = new JSlider(5, 50, 20);
-        eraserSizeSlider.setOrientation(JSlider.HORIZONTAL);
-        eraserSizeSlider.addChangeListener(e -> eraserSize = eraserSizeSlider.getValue());
-
-        // Panneau du bas pour les contrôles
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(Color.YELLOW);
-        bottomPanel.setLayout(new GridLayout(3, 2, 10, 5));
-
         bottomPanel.add(new JLabel("Taille du crayon:"));
         bottomPanel.add(brushSizeSlider);
-        
         bottomPanel.add(new JLabel("Taille de la gomme:"));
         bottomPanel.add(eraserSizeSlider);
-
         bottomPanel.add(new JLabel("Effacer tout:"));
         bottomPanel.add(eraserSlider);
         
@@ -121,18 +97,18 @@ public class DessinNiveauFacile extends JFrame {
             addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
                     if (erasing) {
-                        erase(e.getX(), e.getY()); // Gomme
+                        erase(e.getX(), e.getY());
                     } else {
-                        draw(e.getX(), e.getY()); // Dessiner
+                        draw(e.getX(), e.getY());
                     }
                 }
             });
             addMouseMotionListener(new MouseAdapter() {
                 public void mouseDragged(MouseEvent e) {
                     if (erasing) {
-                        erase(e.getX(), e.getY()); // Gomme
+                        erase(e.getX(), e.getY());
                     } else {
-                        draw(e.getX(), e.getY()); // Dessiner
+                        draw(e.getX(), e.getY());
                     }
                 }
             });
@@ -151,19 +127,20 @@ public class DessinNiveauFacile extends JFrame {
 
         private void draw(int x, int y) {
             if (g2 != null) {
-                g2.setColor(currentColor); // Utiliser la couleur actuelle
-                g2.fillOval(x, y, brushSize, brushSize); // Dessiner avec la taille du pinceau
+                g2.setColor(currentColor);
+                g2.fillOval(x, y, brushSize, brushSize);
                 repaint();
             }
         }
 
         private void erase(int x, int y) {
             if (g2 != null) {
-                g2.setColor(Color.WHITE); // Utiliser le blanc pour effacer
-                g2.fillRect(x - eraserSize / 2, y - eraserSize / 2, eraserSize, eraserSize); // Effacer avec la taille de la gomme
+                g2.setColor(Color.WHITE);
+                g2.fillRect(x - eraserSize / 2, y - eraserSize / 2, eraserSize, eraserSize);
                 repaint();
             }
         }
+
         public void clear() {
             if (g2 != null) {
                 g2.setPaint(Color.WHITE);
@@ -174,6 +151,6 @@ public class DessinNiveauFacile extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new DessinNiveauFacile().setVisible(true));
+        SwingUtilities.invokeLater(() -> new DessinNiveauDifficile().setVisible(true));
     }
 }
