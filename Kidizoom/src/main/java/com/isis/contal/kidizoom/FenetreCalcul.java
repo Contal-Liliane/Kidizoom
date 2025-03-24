@@ -4,6 +4,7 @@
  */
 package com.isis.contal.kidizoom;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -76,21 +77,24 @@ class FenetreCalcul extends JFrame {
         setVisible(true);
     }
 
-    // Génère un calcul en fonction du niveau sélectionné.
+    // Méthode qui génère un calcul en fonction du niveau sélectionné
     private void genererCalcul() {
         calculateur.genererCalcul(niveauFacile.isSelected());
         labelCalcul.setText(calculateur.getCalculAffiche());
         champReponse.setText("");
+        champReponse.setBackground(Color.WHITE); // Réinitialise la couleur du champ de réponse
         champReponse.requestFocus(); // Donne automatiquement le focus au champ de saisie
     }
 
-    // Compare la réponse entrée par l'utilisateur avec la solution correcte.
+    // Méthode qui compare la réponse entrée par l'utilisateur avec la solution correcte
     private void verifierReponse() {
         try {
             int reponse = Integer.parseInt(champReponse.getText());
             if (calculateur.verifierReponse(reponse)) {
+                champReponse.setBackground(Color.GREEN); // Met le champ en vert si la réponse est correcte
                 JOptionPane.showMessageDialog(this, "Bravo ! Bonne réponse.");
             } else {
+                champReponse.setBackground(Color.RED); // Met le champ en rouge si la réponse est incorrecte
                 JOptionPane.showMessageDialog(this, "Faux. Essayez encore !");
             }
         } catch (NumberFormatException e) {
