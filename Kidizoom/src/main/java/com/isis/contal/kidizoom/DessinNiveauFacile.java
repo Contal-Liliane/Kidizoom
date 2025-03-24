@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Line2D;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,12 +22,11 @@ public class DessinNiveauFacile extends JPanel {
         setLayout(new BorderLayout());
 
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(Color.BLACK);
-
         drawPanel = new DrawPanel();
         mainPanel.add(drawPanel, BorderLayout.CENTER);
         setPreferredSize(new Dimension(780, 500));
 
+        // Panel des couleurs
         JPanel colorPanel = new JPanel();
         colorPanel.setBackground(Color.GRAY);
 
@@ -48,8 +49,35 @@ public class DessinNiveauFacile extends JPanel {
 
         mainPanel.add(colorPanel, BorderLayout.NORTH);
 
+        // Panneau des formes
+        JPanel shapePanel = new JPanel();
+        shapePanel.setLayout(new GridLayout(4, 1, 5, 5));
+        shapePanel.setBackground(Color.LIGHT_GRAY);
+
+        ShapeButton freeDrawButton = new ShapeButton("✏", "Libre");
+        ShapeButton circleButton = new ShapeButton("O", "Cercle");
+        ShapeButton squareButton = new ShapeButton("■", "Carré");
+        ShapeButton triangleButton = new ShapeButton("▲", "Triangle");
+
+        shapePanel.add(freeDrawButton);
+        shapePanel.add(circleButton);
+        shapePanel.add(squareButton);
+        shapePanel.add(triangleButton);
+
+        mainPanel.add(shapePanel, BorderLayout.WEST);
+
+        // Panneau des sliders en bas
+        JPanel bottomPanel = new JPanel(new GridLayout(3, 2, 10, 5));
+        bottomPanel.setBackground(Color.YELLOW);
+        bottomPanel.setPreferredSize(new Dimension(780, 100));
+
+        brushSizeSlider = new JSlider(1, 50, 10);
+        brushSizeSlider.addChangeListener(e -> brushSize = brushSizeSlider.getValue());
+
+        eraserSizeSlider = new JSlider(5, 50, 20);
+        eraserSizeSlider.addChangeListener(e -> eraserSize = eraserSizeSlider.getValue());
+
         eraserSlider = new JSlider(0, 100, 0);
-        eraserSlider.setOrientation(JSlider.HORIZONTAL);
         eraserSlider.addChangeListener(e -> {
             if (eraserSlider.getValue() == 100) {
                 drawPanel.clear();
@@ -57,43 +85,15 @@ public class DessinNiveauFacile extends JPanel {
             }
         });
 
-        brushSizeSlider = new JSlider(1, 50, 10);
-        brushSizeSlider.setOrientation(JSlider.HORIZONTAL);
-        brushSizeSlider.addChangeListener(e -> brushSize = brushSizeSlider.getValue());
-
-        eraserSizeSlider = new JSlider(5, 50, 20);
-        eraserSizeSlider.setOrientation(JSlider.HORIZONTAL);
-        eraserSizeSlider.addChangeListener(e -> eraserSize = eraserSizeSlider.getValue());
-
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(Color.YELLOW);
-        bottomPanel.setLayout(new GridLayout(3, 2, 10, 5));
-
         bottomPanel.add(new JLabel("Taille du crayon:"));
         bottomPanel.add(brushSizeSlider);
-
         bottomPanel.add(new JLabel("Taille de la gomme:"));
         bottomPanel.add(eraserSizeSlider);
-
         bottomPanel.add(new JLabel("Effacer tout:"));
         bottomPanel.add(eraserSlider);
 
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
-
-        JPanel shapePanel = new JPanel();
-        shapePanel.setLayout(new GridLayout(3, 1, 5, 5));
-        shapePanel.setBackground(Color.LIGHT_GRAY);
-
-        ShapeButton circleButton = new ShapeButton("O", "Cercle");
-        ShapeButton squareButton = new ShapeButton("■", "Carré");
-        ShapeButton triangleButton = new ShapeButton("▲", "Triangle");
-
-        shapePanel.add(circleButton);
-        shapePanel.add(squareButton);
-        shapePanel.add(triangleButton);
-
-        mainPanel.add(shapePanel, BorderLayout.WEST);
-        add(mainPanel);
+        add(mainPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private JButton createColorButton(String name, Color color) {
@@ -110,35 +110,75 @@ public class DessinNiveauFacile extends JPanel {
     private class DrawPanel extends JPanel {
         private Image image;
         private Graphics2D g2;
-        private int prevX, prevY;
+        private int startX, startY, endX, endY;
 
         public DrawPanel() {
             setBackground(Color.WHITE);
+
             addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
-                    prevX = e.getX();
-                    prevY = e.getY();
+                    startX = e.getX();
+                    startY = e.getY();
                 }
-            });
-            addMouseMotionListener(new MouseAdapter() {
-                public void mouseDragged(MouseEvent e) {
+
+                public void mouseReleased(MouseEvent e) {
+                    endX = e.getX();
+                    endY = e.getY();
+
                     if (g2 == null) {
                         image = createImage(getWidth(), getHeight());
                         g2 = (Graphics2D) image.getGraphics();
                         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                         clear();
                     }
-                    if (erasing) {
-                        g2.setColor(Color.WHITE);
-                        g2.setStroke(new BasicStroke(eraserSize));
-                    } else {
-                        g2.setColor(currentColor);
-                        g2.setStroke(new BasicStroke(brushSize));
+
+                    g2.setColor(currentColor);
+                    g2.setStroke(new BasicStroke(brushSize));
+
+                    switch (selectedShape) {
+                        case "Cercle":
+                            int radius = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
+                            g2.draw(new Ellipse2D.Float(startX - radius / 2, startY - radius / 2, radius, radius));
+                            break;
+                        case "Carré":
+                            int size = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
+                            g2.draw(new Rectangle2D.Float(startX, startY, size, size));
+                            break;
+                        case "Triangle":
+                            int[] xPoints = {startX, endX, (startX + endX) / 2};
+                            int[] yPoints = {endY, endY, startY};
+                            g2.drawPolygon(xPoints, yPoints, 3);
+                            break;
+                        default:
+                            // Ne rien faire si c'est du dessin libre
+                            break;
                     }
-                    g2.draw(new Line2D.Float(prevX, prevY, e.getX(), e.getY()));
-                    prevX = e.getX();
-                    prevY = e.getY();
+
                     repaint();
+                }
+            });
+
+            addMouseMotionListener(new MouseAdapter() {
+                public void mouseDragged(MouseEvent e) {
+                    if (selectedShape.equals("Libre")) {
+                        if (g2 == null) {
+                            image = createImage(getWidth(), getHeight());
+                            g2 = (Graphics2D) image.getGraphics();
+                            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            clear();
+                        }
+                        if (erasing) {
+                            g2.setColor(Color.WHITE);
+                            g2.setStroke(new BasicStroke(eraserSize));
+                        } else {
+                            g2.setColor(currentColor);
+                            g2.setStroke(new BasicStroke(brushSize));
+                        }
+                        g2.draw(new Line2D.Float(startX, startY, e.getX(), e.getY()));
+                        startX = e.getX();
+                        startY = e.getY();
+                        repaint();
+                    }
                 }
             });
         }
@@ -162,7 +202,7 @@ public class DessinNiveauFacile extends JPanel {
     private class ShapeButton extends JButton {
         public ShapeButton(String text, String shapeType) {
             super(text);
-            this.setPreferredSize(new Dimension(45, 30)); // Taille plus petite
+            setPreferredSize(new Dimension(45, 30));
             setFocusPainted(false);
             addActionListener(e -> selectedShape = shapeType);
         }

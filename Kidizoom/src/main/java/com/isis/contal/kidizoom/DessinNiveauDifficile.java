@@ -3,55 +3,54 @@ package com.isis.contal.kidizoom;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.Path2D;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DessinNiveauDifficile extends JPanel {
     private DrawPanel drawPanel;
     private JSlider eraserSlider, brushSizeSlider, eraserSizeSlider;
-    private Color currentColor = Color.BLACK; // Couleur du pinceau
-    private boolean erasing = false; // Indicateur pour savoir si on utilise la gomme
-    private int brushSize = 10; // Taille du pinceau par défaut
-    private int eraserSize = 20; // Taille de la gomme par défaut
+    private Color currentColor = Color.BLACK;
+    private boolean erasing = false;
+    private int brushSize = 10;
+    private int eraserSize = 20;
+    private String selectedShape = "Libre";
 
     public DessinNiveauDifficile() {
         setLayout(new BorderLayout());
         
-        // Conteneur principal
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.BLACK);
         
-        // Zone de dessin blanche
         drawPanel = new DrawPanel();
         mainPanel.add(drawPanel, BorderLayout.CENTER);
-        setPreferredSize(new Dimension(780, 500)); // Ajuste les dimensions selon tes besoins
+        setPreferredSize(new Dimension(780, 500));
         
-        // Palette de couleurs
         JPanel colorPanel = new JPanel();
         colorPanel.setBackground(Color.GRAY);
 
-        // Bouton de sélection de couleur
         JButton colorChooserButton = new JButton("Choisir La Couleur");
         colorChooserButton.addActionListener(e -> {
             Color newColor = JColorChooser.showDialog(null, "Choisissez une couleur", currentColor);
             if (newColor != null) {
                 currentColor = newColor;
-                erasing = false; // Revenir au dessin après le choix de couleur
+                erasing = false;
             }
         });
         colorPanel.add(colorChooserButton);
         
-        // Bouton gomme
         JButton eraseButton = new JButton("Gomme");
         eraseButton.addActionListener(e -> {
-            erasing = !erasing; // Alterner entre gomme et dessin
+            erasing = !erasing;
             eraseButton.setText(erasing ? "Dessiner" : "Gomme");
         });
         colorPanel.add(eraseButton);
 
         mainPanel.add(colorPanel, BorderLayout.NORTH);
-        
-        // Sliders pour les outils
+
         eraserSlider = new JSlider(0, 100, 0);
-        eraserSlider.setOrientation(JSlider.HORIZONTAL);
         eraserSlider.addChangeListener(e -> {
             if (eraserSlider.getValue() == 100) {
                 drawPanel.clear();
@@ -60,14 +59,11 @@ public class DessinNiveauDifficile extends JPanel {
         });
 
         brushSizeSlider = new JSlider(1, 50, 10);
-        brushSizeSlider.setOrientation(JSlider.HORIZONTAL);
         brushSizeSlider.addChangeListener(e -> brushSize = brushSizeSlider.getValue());
 
         eraserSizeSlider = new JSlider(5, 50, 20);
-        eraserSizeSlider.setOrientation(JSlider.HORIZONTAL);
         eraserSizeSlider.addChangeListener(e -> eraserSize = eraserSizeSlider.getValue());
 
-        // Panneau du bas pour les sliders
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(Color.YELLOW);
         bottomPanel.setLayout(new GridLayout(3, 2, 10, 5));
@@ -82,32 +78,56 @@ public class DessinNiveauDifficile extends JPanel {
         bottomPanel.add(eraserSlider);
         
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
-        
+
+        JPanel shapePanel = new JPanel();
+        shapePanel.setLayout(new GridLayout(4, 1, 5, 5));
+        shapePanel.setBackground(Color.LIGHT_GRAY);
+
+        ShapeButton freeDrawButton = new ShapeButton("✏", "Libre");
+        ShapeButton circleButton = new ShapeButton("O", "Cercle");
+        ShapeButton squareButton = new ShapeButton("■", "Carré");
+        ShapeButton triangleButton = new ShapeButton("▲", "Triangle");
+
+        shapePanel.add(freeDrawButton);
+        shapePanel.add(circleButton);
+        shapePanel.add(squareButton);
+        shapePanel.add(triangleButton);
+
+        mainPanel.add(shapePanel, BorderLayout.WEST);
+
         add(mainPanel);
     }
 
-    // Panneau de dessin
     private class DrawPanel extends JPanel {
         private Image image;
         private Graphics2D g2;
-        
+        private int startX, startY, endX, endY;
+        private List<Shape> shapes = new ArrayList<>(); // Liste des formes dessinées
+
         public DrawPanel() {
             setBackground(Color.WHITE);
             addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
-                    if (erasing) {
-                        erase(e.getX(), e.getY()); // Gomme
-                    } else {
-                        draw(e.getX(), e.getY()); // Dessiner
+                    startX = e.getX();
+                    startY = e.getY();
+                }
+
+                public void mouseReleased(MouseEvent e) {
+                    endX = e.getX();
+                    endY = e.getY();
+
+                    if (!erasing) {
+                        drawShape();
                     }
                 }
             });
+
             addMouseMotionListener(new MouseAdapter() {
                 public void mouseDragged(MouseEvent e) {
                     if (erasing) {
-                        erase(e.getX(), e.getY()); // Gomme
-                    } else {
-                        draw(e.getX(), e.getY()); // Dessiner
+                        erase(e.getX(), e.getY());
+                    } else if (selectedShape.equals("Libre")) {
+                        draw(e.getX(), e.getY());
                     }
                 }
             });
@@ -126,25 +146,77 @@ public class DessinNiveauDifficile extends JPanel {
 
         private void draw(int x, int y) {
             if (g2 != null) {
-                g2.setColor(currentColor); // Utiliser la couleur actuelle
-                g2.fillOval(x, y, brushSize, brushSize); // Dessiner avec la taille du pinceau
+                g2.setColor(currentColor);
+                g2.fillOval(x, y, brushSize, brushSize);
                 repaint();
             }
         }
 
+        private void drawShape() {
+            if (g2 == null) return;
+
+            int width = Math.abs(endX - startX);
+            int height = Math.abs(endY - startY);
+            int x = Math.min(startX, endX);
+            int y = Math.min(startY, endY);
+
+            g2.setColor(currentColor);
+            g2.setStroke(new BasicStroke(brushSize));
+
+            Shape shape = null;
+
+            switch (selectedShape) {
+                case "Cercle":
+                    shape = new Ellipse2D.Float(x, y, width, height);
+                    break;
+                case "Carré":
+                    shape = new Rectangle2D.Float(x, y, width, height);
+                    break;
+                case "Triangle":
+                    Path2D triangle = new Path2D.Double();
+                    triangle.moveTo(startX, startY);
+                    triangle.lineTo(startX + width, startY + height);
+                    triangle.lineTo(startX - width, startY + height);
+                    triangle.closePath();
+                    shape = triangle;
+                    break;
+                default:
+                    return;
+            }
+
+            shapes.add(shape);
+            g2.draw(shape);
+            repaint();
+        }
+
         private void erase(int x, int y) {
             if (g2 != null) {
-                g2.setColor(Color.WHITE); // Utiliser le blanc pour effacer
-                g2.fillRect(x - eraserSize / 2, y - eraserSize / 2, eraserSize, eraserSize); // Effacer avec la taille de la gomme
+                g2.setColor(Color.WHITE);
+                g2.fillRect(x - eraserSize / 2, y - eraserSize / 2, eraserSize, eraserSize);
+
+                // Effacer les formes sous la gomme
+                shapes.removeIf(shape -> shape.getBounds2D().intersects(x - eraserSize / 2, y - eraserSize / 2, eraserSize, eraserSize));
+
                 repaint();
             }
         }
+
         public void clear() {
             if (g2 != null) {
                 g2.setPaint(Color.WHITE);
                 g2.fillRect(0, 0, getWidth(), getHeight());
+                shapes.clear(); // Efface aussi les formes
                 repaint();
             }
+        }
+    }
+
+    private class ShapeButton extends JButton {
+        public ShapeButton(String text, String shapeType) {
+            super(text);
+            setPreferredSize(new Dimension(45, 30));
+            setFocusPainted(false);
+            addActionListener(e -> selectedShape = shapeType);
         }
     }
 
