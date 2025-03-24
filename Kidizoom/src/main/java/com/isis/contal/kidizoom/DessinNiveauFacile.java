@@ -6,8 +6,15 @@ import java.awt.event.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class DessinNiveauFacile extends JPanel {
     private DrawPanel drawPanel;
@@ -25,6 +32,21 @@ public class DessinNiveauFacile extends JPanel {
         drawPanel = new DrawPanel();
         mainPanel.add(drawPanel, BorderLayout.CENTER);
         setPreferredSize(new Dimension(780, 500));
+        JPanel controlPanel = new JPanel();
+        JButton saveButton = new JButton("Sauvegarder");
+        JButton loadButton = new JButton("Charger");
+        JButton deleteButton = new JButton("Supprimer");
+
+        saveButton.addActionListener(e -> saveDrawing());
+        loadButton.addActionListener(e -> loadDrawing());
+        deleteButton.addActionListener(e -> deleteDrawing());
+        
+        controlPanel.add(saveButton);
+        controlPanel.add(loadButton);
+        controlPanel.add(deleteButton);
+        
+        mainPanel.add(controlPanel, BorderLayout.SOUTH);
+        add(mainPanel, BorderLayout.CENTER);
 
         // Panel des couleurs
         JPanel colorPanel = new JPanel();
@@ -107,11 +129,65 @@ public class DessinNiveauFacile extends JPanel {
         return button;
     }
 
+    private void saveDrawing() {
+        String name = JOptionPane.showInputDialog(this, "Nom du dessin :");
+        if (name != null && !name.trim().isEmpty()) {
+            try (FileOutputStream fos = new FileOutputStream(name + ".ser");
+                 ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+                oos.writeObject(drawPanel.getImage());
+                JOptionPane.showMessageDialog(this, "Dessin sauvegardé !");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private void loadDrawing() {
+        File dir = new File(".");
+        String[] files = dir.list((d, name) -> name.endsWith(".ser"));
+        if (files != null && files.length > 0) {
+            String selectedFile = (String) JOptionPane.showInputDialog(this, "Choisissez un dessin :",
+                    "Charger un dessin", JOptionPane.PLAIN_MESSAGE, null, files, files[0]);
+            if (selectedFile != null) {
+                try (FileInputStream fis = new FileInputStream(selectedFile);
+                     ObjectInputStream ois = new ObjectInputStream(fis)) {
+                    drawPanel.setImage((Image) ois.readObject());
+                    JOptionPane.showMessageDialog(this, "Dessin chargé !");
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Aucun dessin enregistré.");
+        }
+    }
+    
+    private void deleteDrawing() {
+        File dir = new File(".");
+        String[] files = dir.list((d, name) -> name.endsWith(".ser"));
+        if (files != null && files.length > 0) {
+            String selectedFile = (String) JOptionPane.showInputDialog(this, "Choisissez un dessin à supprimer :",
+                    "Supprimer un dessin", JOptionPane.PLAIN_MESSAGE, null, files, files[0]);
+            if (selectedFile != null) {
+                File file = new File(selectedFile);
+                if (file.delete()) {
+                    JOptionPane.showMessageDialog(this, "Dessin supprimé !");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Échec de la suppression.");
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Aucun dessin enregistré.");
+        }
+    }
+
+    
     private class DrawPanel extends JPanel {
         private Image image;
         private Graphics2D g2;
         private int startX, startY, endX, endY;
 
+        
         public DrawPanel() {
             setBackground(Color.WHITE);
 
@@ -197,8 +273,21 @@ public class DessinNiveauFacile extends JPanel {
                 repaint();
             }
         }
-    }
 
+public Image getImage() {
+    return image;
+}
+
+public void setImage(Image img) {
+    if (img != null) {
+        image = img;
+        g2 = (Graphics2D) image.getGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        repaint();
+    }
+}
+
+    }
     private class ShapeButton extends JButton {
         public ShapeButton(String text, String shapeType) {
             super(text);
@@ -208,3 +297,4 @@ public class DessinNiveauFacile extends JPanel {
         }
     }
 }
+    
