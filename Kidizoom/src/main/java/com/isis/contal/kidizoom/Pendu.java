@@ -4,22 +4,15 @@
  */
 package com.isis.contal.kidizoom;
 
-import java.awt.event.ActionListener;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author bapti
  */
-
-/*Button du clavier pendu
-*/
-
-private class LettreClickListener implements ActionListener {
-    private final char lettre;
-
-    public LettreClickListener(char lettre) {
-        this.lettre = lettre;
-        }
-
-
+public class Pendu {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(PenduAffichage :: new);
+    }
+    
 }

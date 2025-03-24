@@ -1,0 +1,40 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.isis.contal.kidizoom;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import javax.swing.JPanel;
+
+/**
+ *
+ * @author bapti
+ */
+public class DessinPanel extends JPanel{
+    private final PenduLogic penduLogic;
+    
+    public DessinPanel (PenduLogic pl){
+        this.penduLogic=pl;
+    }
+            
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.setColor(Color.BLACK);
+        int erreur = penduLogic.getErreur();
+        
+        
+        g.drawLine(50, 250, 150, 250); 
+        g.drawLine(100, 250, 100, 50); 
+        g.drawLine(100, 50, 200, 50); 
+        g.drawLine(200, 50, 200, 80); 
+        
+        if (erreur > 0) g.drawOval(185, 80, 30, 30); // Tête
+        if (erreur > 1) g.drawLine(200, 110, 200, 170); // Corps
+        if (erreur > 2) g.drawLine(200, 120, 180, 150); // Bras gauche
+        if (erreur > 3) g.drawLine(200, 120, 220, 150); // Bras droit
+        if (erreur > 4) g.drawLine(200, 170, 180, 200); // Jambe gauche
+        if (erreur> 5) g.drawLine(200, 170, 220, 200); // Jambe droite
+    }
+    }
