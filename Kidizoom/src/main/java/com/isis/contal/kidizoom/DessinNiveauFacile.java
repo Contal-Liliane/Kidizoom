@@ -12,8 +12,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class DessinNiveauFacile extends JPanel {
@@ -90,7 +88,7 @@ public class DessinNiveauFacile extends JPanel {
 
         // Panneau des sliders en bas
         JPanel bottomPanel = new JPanel(new GridLayout(3, 2, 10, 5));
-        bottomPanel.setBackground(Color.YELLOW);
+        bottomPanel.setBackground(Color.PINK);
         bottomPanel.setPreferredSize(new Dimension(780, 100));
 
         brushSizeSlider = new JSlider(1, 50, 10);
@@ -297,4 +295,3 @@ public void setImage(Image img) {
         }
     }
 }
-    
