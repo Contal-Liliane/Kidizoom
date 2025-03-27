@@ -8,41 +8,75 @@ public class CalculNiveauFacile extends JPanel {
     private JLabel labelCalcul;
     private JTextField champReponse;
     private JButton boutonVerifier, boutonSolution, boutonNouveau, boutonSupprimer;
+    private JSlider tailleSlider;
     private int resultatAttendu;
 
     public CalculNiveauFacile() {
-        setLayout(new GridBagLayout());
+        setLayout(new BorderLayout());
+
+        // Panel principal (fond noir)
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(Color.BLACK);
+
+        // Panel pour le calcul et la réponse
+        JPanel calculPanel = new JPanel();
+        calculPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
 
         labelCalcul = new JLabel();
+        labelCalcul.setForeground(Color.BLACK);
+        labelCalcul.setFont(new Font("Arial", Font.BOLD, 24)); // Taille par défaut
+
         champReponse = new JTextField(5);
         boutonVerifier = new JButton("Vérifier");
         boutonSolution = new JButton("Solution");
         boutonNouveau = new JButton("Nouveau");
         boutonSupprimer = new JButton("Supprimer");
 
-        // Ajout des composants au layout
+        // Slider pour régler la taille du texte
+        tailleSlider = new JSlider(12, 48, 24);
+        tailleSlider.setMajorTickSpacing(6);
+        tailleSlider.setPaintTicks(true);
+        tailleSlider.setPaintLabels(true);
+        tailleSlider.addChangeListener(e -> ajusterTailleTexte());
+
+        // Ajout des composants avec GridBagLayout
         gbc.gridx = 0;
         gbc.gridy = 0;
-        add(labelCalcul, gbc);
+        calculPanel.add(labelCalcul, gbc);
 
         gbc.gridy = 1;
-        add(champReponse, gbc);
+        calculPanel.add(champReponse, gbc);
 
         gbc.gridy = 2;
         gbc.gridwidth = 1;
-        add(boutonVerifier, gbc);
+        calculPanel.add(boutonVerifier, gbc);
 
         gbc.gridx = 1;
-        add(boutonSolution, gbc);
+        calculPanel.add(boutonSolution, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 3;
-        add(boutonNouveau, gbc);
+        calculPanel.add(boutonNouveau, gbc);
 
         gbc.gridx = 1;
-        add(boutonSupprimer, gbc);
+        calculPanel.add(boutonSupprimer, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        calculPanel.add(new JLabel("Taille du texte :"), gbc);
+
+        gbc.gridy = 5;
+        calculPanel.add(tailleSlider, gbc);
+
+        // Ajout du panneau de calcul au panneau principal
+        mainPanel.add(calculPanel, BorderLayout.CENTER);
+        setPreferredSize(new Dimension(780, 500));
+
+        // Ajout du panneau principal à l'interface
+        add(mainPanel, BorderLayout.CENTER);
 
         // Actions des boutons
         boutonVerifier.addActionListener(e -> verifierReponse());
@@ -54,7 +88,13 @@ public class CalculNiveauFacile extends JPanel {
         genererCalcul();
     }
 
-    // Méthode pour générer un calcul (niveau facile)
+    // Ajuste la taille du texte du calcul en fonction du slider
+    private void ajusterTailleTexte() {
+        int nouvelleTaille = tailleSlider.getValue();
+        labelCalcul.setFont(new Font("Arial", Font.BOLD, nouvelleTaille));
+    }
+
+    // Générer un calcul aléatoire (niveau facile)
     private void genererCalcul() {
         Random rand = new Random();
         int a = rand.nextInt(10) + 1;
@@ -66,7 +106,7 @@ public class CalculNiveauFacile extends JPanel {
         champReponse.requestFocus();
     }
 
-    // Méthode pour vérifier la réponse de l'utilisateur
+    // Vérifier la réponse de l'utilisateur
     private void verifierReponse() {
         try {
             int reponse = Integer.parseInt(champReponse.getText());
@@ -82,7 +122,7 @@ public class CalculNiveauFacile extends JPanel {
         }
     }
 
-    // Méthode pour afficher la solution
+    // Afficher la solution
     private void montrerSolution() {
         JOptionPane.showMessageDialog(this, "La solution est : " + resultatAttendu);
     }
