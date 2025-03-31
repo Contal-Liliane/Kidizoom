@@ -14,13 +14,20 @@ import java.util.Set;
  */
 public class PenduLogic {
     
-    private final String[] mots = {"JAVA", "PROGRAMMATION", "ORDINATEUR", "CLAVIER", "SOURIS"};
-    private final String motSecret;
+    private final Dictionnaire dictionnaire;
+    private String motSecret;
     private final Set<Character> lettresDevinees = new HashSet<>();
     private int erreur = 0;
     
     public PenduLogic() {
-        motSecret = mots[new Random().nextInt(mots.length)];
+        dictionnaire= new Dictionnaire();
+        choisirMotRandom();
+    }
+    
+    public void choisirMotRandom(){
+        motSecret=dictionnaire.getMotAleatoire();
+        lettresDevinees.clear();
+        erreur = 0;
     }
     
     public String getMotSecret() {
