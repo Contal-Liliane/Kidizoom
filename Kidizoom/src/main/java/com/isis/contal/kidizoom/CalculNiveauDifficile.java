@@ -29,12 +29,14 @@ public class CalculNiveauDifficile extends JPanel {
         labelCalcul.setFont(new Font("Arial", Font.BOLD, 24)); // Taille par défaut
 
         champReponse = new JTextField(5);
+        champReponse.setFont(new Font("Arial", Font.BOLD, 24)); // Taille par défaut
+
         boutonVerifier = new JButton("Vérifier");
         boutonSolution = new JButton("Solution");
         boutonNouveau = new JButton("Nouveau");
         boutonSupprimer = new JButton("Supprimer");
 
-        // Slider pour régler la taille du texte
+        // Slider pour régler la taille du texte et du champ de réponse
         tailleSlider = new JSlider(12, 48, 24);
         tailleSlider.setMajorTickSpacing(6);
         tailleSlider.setPaintTicks(true);
@@ -88,19 +90,49 @@ public class CalculNiveauDifficile extends JPanel {
         genererCalcul();
     }
 
-    // Ajuste la taille du texte du calcul en fonction du slider
+    // Ajuste la taille du texte du calcul ET du champ de réponse
     private void ajusterTailleTexte() {
         int nouvelleTaille = tailleSlider.getValue();
+
+        // Mettre à jour la taille du texte du calcul
         labelCalcul.setFont(new Font("Arial", Font.BOLD, nouvelleTaille));
+
+        // Mettre à jour la taille du champ de réponse
+        champReponse.setFont(new Font("Arial", Font.BOLD, nouvelleTaille));
+        champReponse.setPreferredSize(new Dimension(nouvelleTaille * 3, nouvelleTaille + 10));
+
+        // Rafraîchir l'affichage
+        revalidate();
+        repaint();
     }
 
     // Générer un calcul aléatoire (niveau difficile)
     private void genererCalcul() {
         Random rand = new Random();
-        int a = rand.nextInt(10) + 1;
-        int b = rand.nextInt(10) + 1;
-        resultatAttendu = a * b;
-        labelCalcul.setText(a + " × " + b + " = ?");
+        int typeOperation = rand.nextInt(3); // 0 = addition, 1 = soustraction, 2 = multiplication
+        int a, b;
+
+        switch (typeOperation) {
+            case 0: // Addition (2 nombres à 3 chiffres)
+                a = rand.nextInt(900) + 100; // 100 à 999
+                b = rand.nextInt(900) + 100; // 100 à 999
+                resultatAttendu = a + b;
+                labelCalcul.setText(a + " + " + b + " = ?");
+                break;
+            case 1: // Soustraction (2 nombres à 3 chiffres, résultat négatif possible)
+                a = rand.nextInt(900) + 100; // 100 à 999
+                b = rand.nextInt(900) + 100; // 100 à 999
+                resultatAttendu = a - b;
+                labelCalcul.setText(a + " - " + b + " = ?");
+                break;
+            case 2: // Multiplication (2 nombres à 1 chiffre)
+                a = rand.nextInt(9) + 1; // 1 à 9
+                b = rand.nextInt(9) + 1; // 1 à 9
+                resultatAttendu = a * b;
+                labelCalcul.setText(a + " × " + b + " = ?");
+                break;
+        }
+
         champReponse.setText("");
         champReponse.setBackground(Color.WHITE);
         champReponse.requestFocus();

@@ -3,31 +3,25 @@ package com.isis.contal.kidizoom;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
+import java.awt.geom.*;
+import java.io.*;
 
 public class DessinNiveauFacile extends JPanel {
-    private DrawPanel drawPanel;
+
+    private PanneauDessin drawPanel;
     private JSlider eraserSlider, brushSizeSlider, eraserSizeSlider;
     private Color currentColor = Color.BLACK;
     private boolean erasing = false;
     private int brushSize = 10;
     private int eraserSize = 20;
-    private String selectedShape = "Libre";
+    public String selectedShape = "Libre";  // Forme par défaut
+    private ShapeButton shapeButton;  // Déclaration de ShapeButton
 
     public DessinNiveauFacile() {
         setLayout(new BorderLayout());
 
         JPanel mainPanel = new JPanel(new BorderLayout());
-        drawPanel = new DrawPanel();
+        drawPanel = new PanneauDessin(this);  // Passer l'instance de DessinNiveauFacile à DrawPanel
         mainPanel.add(drawPanel, BorderLayout.CENTER);
         setPreferredSize(new Dimension(780, 500));
         JPanel controlPanel = new JPanel();
@@ -38,11 +32,11 @@ public class DessinNiveauFacile extends JPanel {
         saveButton.addActionListener(e -> saveDrawing());
         loadButton.addActionListener(e -> loadDrawing());
         deleteButton.addActionListener(e -> deleteDrawing());
-        
+
         controlPanel.add(saveButton);
         controlPanel.add(loadButton);
         controlPanel.add(deleteButton);
-        
+
         mainPanel.add(controlPanel, BorderLayout.SOUTH);
         add(mainPanel, BorderLayout.CENTER);
 
@@ -74,10 +68,11 @@ public class DessinNiveauFacile extends JPanel {
         shapePanel.setLayout(new GridLayout(4, 1, 5, 5));
         shapePanel.setBackground(Color.LIGHT_GRAY);
 
-        ShapeButton freeDrawButton = new ShapeButton("✏", "Libre");
-        ShapeButton circleButton = new ShapeButton("O", "Cercle");
-        ShapeButton squareButton = new ShapeButton("■", "Carré");
-        ShapeButton triangleButton = new ShapeButton("▲", "Triangle");
+        // Création de chaque bouton ShapeButton en passant l'instance de DessinNiveauFacile
+        ShapeButton freeDrawButton = new ShapeButton("✏", "Libre", this);
+        ShapeButton circleButton = new ShapeButton("O", "Cercle", this);
+        ShapeButton squareButton = new ShapeButton("■", "Carré", this);
+        ShapeButton triangleButton = new ShapeButton("▲", "Triangle", this);
 
         shapePanel.add(freeDrawButton);
         shapePanel.add(circleButton);
@@ -127,11 +122,10 @@ public class DessinNiveauFacile extends JPanel {
         return button;
     }
 
-    private void saveDrawing() {
+    public void saveDrawing() {
         String name = JOptionPane.showInputDialog(this, "Nom du dessin :");
         if (name != null && !name.trim().isEmpty()) {
-            try (FileOutputStream fos = new FileOutputStream(name + ".ser");
-                 ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            try (FileOutputStream fos = new FileOutputStream(name + ".ser"); ObjectOutputStream oos = new ObjectOutputStream(fos)) {
                 oos.writeObject(drawPanel.getImage());
                 JOptionPane.showMessageDialog(this, "Dessin sauvegardé !");
             } catch (IOException e) {
@@ -139,16 +133,15 @@ public class DessinNiveauFacile extends JPanel {
             }
         }
     }
-    
-    private void loadDrawing() {
+
+    public void loadDrawing() {
         File dir = new File(".");
         String[] files = dir.list((d, name) -> name.endsWith(".ser"));
         if (files != null && files.length > 0) {
             String selectedFile = (String) JOptionPane.showInputDialog(this, "Choisissez un dessin :",
                     "Charger un dessin", JOptionPane.PLAIN_MESSAGE, null, files, files[0]);
             if (selectedFile != null) {
-                try (FileInputStream fis = new FileInputStream(selectedFile);
-                     ObjectInputStream ois = new ObjectInputStream(fis)) {
+                try (FileInputStream fis = new FileInputStream(selectedFile); ObjectInputStream ois = new ObjectInputStream(fis)) {
                     drawPanel.setImage((Image) ois.readObject());
                     JOptionPane.showMessageDialog(this, "Dessin chargé !");
                 } catch (IOException | ClassNotFoundException e) {
@@ -159,8 +152,8 @@ public class DessinNiveauFacile extends JPanel {
             JOptionPane.showMessageDialog(this, "Aucun dessin enregistré.");
         }
     }
-    
-    private void deleteDrawing() {
+
+    public void deleteDrawing() {
         File dir = new File(".");
         String[] files = dir.list((d, name) -> name.endsWith(".ser"));
         if (files != null && files.length > 0) {
@@ -179,119 +172,27 @@ public class DessinNiveauFacile extends JPanel {
         }
     }
 
-    
-    private class DrawPanel extends JPanel {
-        private Image image;
-        private Graphics2D g2;
-        private int startX, startY, endX, endY;
-
-        
-        public DrawPanel() {
-            setBackground(Color.WHITE);
-
-            addMouseListener(new MouseAdapter() {
-                public void mousePressed(MouseEvent e) {
-                    startX = e.getX();
-                    startY = e.getY();
-                }
-
-                public void mouseReleased(MouseEvent e) {
-                    endX = e.getX();
-                    endY = e.getY();
-
-                    if (g2 == null) {
-                        image = createImage(getWidth(), getHeight());
-                        g2 = (Graphics2D) image.getGraphics();
-                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        clear();
-                    }
-
-                    g2.setColor(currentColor);
-                    g2.setStroke(new BasicStroke(brushSize));
-
-                    switch (selectedShape) {
-                        case "Cercle":
-                            int radius = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
-                            g2.draw(new Ellipse2D.Float(startX - radius / 2, startY - radius / 2, radius, radius));
-                            break;
-                        case "Carré":
-                            int size = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
-                            g2.draw(new Rectangle2D.Float(startX, startY, size, size));
-                            break;
-                        case "Triangle":
-                            int[] xPoints = {startX, endX, (startX + endX) / 2};
-                            int[] yPoints = {endY, endY, startY};
-                            g2.drawPolygon(xPoints, yPoints, 3);
-                            break;
-                        default:
-                            // Ne rien faire si c'est du dessin libre
-                            break;
-                    }
-
-                    repaint();
-                }
-            });
-
-            addMouseMotionListener(new MouseAdapter() {
-                public void mouseDragged(MouseEvent e) {
-                    if (selectedShape.equals("Libre")) {
-                        if (g2 == null) {
-                            image = createImage(getWidth(), getHeight());
-                            g2 = (Graphics2D) image.getGraphics();
-                            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            clear();
-                        }
-                        if (erasing) {
-                            g2.setColor(Color.WHITE);
-                            g2.setStroke(new BasicStroke(eraserSize));
-                        } else {
-                            g2.setColor(currentColor);
-                            g2.setStroke(new BasicStroke(brushSize));
-                        }
-                        g2.draw(new Line2D.Float(startX, startY, e.getX(), e.getY()));
-                        startX = e.getX();
-                        startY = e.getY();
-                        repaint();
-                    }
-                }
-            });
-        }
-
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            if (image != null) {
-                g.drawImage(image, 0, 0, null);
-            }
-        }
-
-        public void clear() {
-            if (g2 != null) {
-                g2.setPaint(Color.WHITE);
-                g2.fillRect(0, 0, getWidth(), getHeight());
-                repaint();
-            }
-        }
-
-public Image getImage() {
-    return image;
-}
-
-public void setImage(Image img) {
-    if (img != null) {
-        image = img;
-        g2 = (Graphics2D) image.getGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        repaint();
+    public Color getCurrentColor() {
+        return currentColor;
     }
-}
 
+    public boolean isErasing() {
+        return erasing;
     }
-    private class ShapeButton extends JButton {
-        public ShapeButton(String text, String shapeType) {
-            super(text);
-            setPreferredSize(new Dimension(45, 30));
-            setFocusPainted(false);
-            addActionListener(e -> selectedShape = shapeType);
-        }
+
+    public int getBrushSize() {
+        return brushSize;
+    }
+
+    public int getEraserSize() {
+        return eraserSize;
+    }
+
+    public String getSelectedShape() {
+        return selectedShape;
+    }
+
+    public void setSelectedShape(String selectedShape) {
+        this.selectedShape = selectedShape;
     }
 }

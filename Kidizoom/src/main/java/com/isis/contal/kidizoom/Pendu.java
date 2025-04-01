@@ -1,19 +1,20 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.isis.contal.kidizoom;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
+import java.awt.*;
 
-/**
- *
- * @author bapti
- */
-public class Pendu {
-    public static void main(String[] args) {
-        //SwingUtilities.invokeLater(PenduAffichage :: new);
-        SwingUtilities.invokeLater(Administration::new);
+public class Pendu extends JPanel {
+    private final PenduAffichage penduAffichage;
+
+    public Pendu() {
+        setLayout(new BorderLayout());
+        setPreferredSize(new Dimension(780, 500)); // Définir la taille du JPanel
+        
+        // Instancier le panneau du jeu du pendu
+        penduAffichage = new PenduAffichage();
+        penduAffichage.setPreferredSize(new Dimension(780, 500)); // Assurer la bonne dimension
+
+        // Ajouter le panneau du jeu au JPanel principal
+        add(penduAffichage, BorderLayout.CENTER);
     }
-    
 }
