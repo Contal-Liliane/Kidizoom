@@ -62,4 +62,8 @@ public class Dictionnaire {
     public String getMotAleatoire() {
         return mots.get(new Random().nextInt(mots.size()));
     }
+    
+    public List<String> getMots(){
+        return mots;
+    }
 }

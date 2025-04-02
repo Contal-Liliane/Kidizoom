@@ -5,6 +5,11 @@
 package com.isis.contal.kidizoom;
 
 import java.awt.GridLayout;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import javax.swing.JButton;
@@ -17,10 +22,12 @@ import javax.swing.JPasswordField;
  * @author bapti
  */
 public class Administration extends JFrame{
-    private static final String motDePasse_HACHE = "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8";
     private final Dictionnaire dictionnaire = new Dictionnaire();
+    private static final String MOTDEPASSE_FICHIER = "motdepasse.txt";
+    private String motDePasseHache;
     
     public Administration(){
+        chargerMotDePasse();
         JPasswordField passwordField = new JPasswordField();
         int option = JOptionPane.showConfirmDialog(this, passwordField, "Entrez le mot de passe:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (option != JOptionPane.OK_OPTION || !checkMotDePasse(new String(passwordField.getPassword()))) {
@@ -31,7 +38,7 @@ public class Administration extends JFrame{
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(3, 1));
+        setLayout(new GridLayout(4, 1));
         
         JButton ajouterBouton = new JButton("Ajouter un mot");
         ajouterBouton.addActionListener(e -> ajouterMot());
@@ -40,13 +47,36 @@ public class Administration extends JFrame{
         JButton supprimerBouton = new JButton("Supprimer un mot");
         supprimerBouton.addActionListener(e -> supprimerMot());
         add(supprimerBouton);
-
+        
+        JButton afficherMotBouton = new  JButton("Afficher les mots");
+        afficherMotBouton.addActionListener(e -> afficherMots());
+        add(afficherMotBouton);
+        
+        JButton changeMotDePasseBouton= new  JButton("Modifier le mot de passe");
+        changeMotDePasseBouton.addActionListener(e -> changerMotDePasse());
+        add(changeMotDePasseBouton);
+        
         setVisible(true);
     }
     
+    private void chargerMotDePasse(){
+        try (BufferedReader br = new BufferedReader(new FileReader(MOTDEPASSE_FICHIER))) {
+           motDePasseHache = br.readLine();
+        } catch (IOException e) {
+           motDePasseHache = motDePasseHache("password");
+        }
+    }
+    
+    private void enregistrerMotDePasse(String h){
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(MOTDEPASSE_FICHIER))) {
+            bw.write(h);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     private boolean checkMotDePasse(String mdp){ 
-        System.out.println(motDePasseHache(mdp));
-        return motDePasseHache(mdp).equals(motDePasse_HACHE);  
+        return motDePasseHache(mdp).equals(motDePasseHache);  
        
     }
     
@@ -76,6 +106,18 @@ public class Administration extends JFrame{
         if (motSupprimer != null && !motSupprimer.trim().isEmpty()) {
             dictionnaire.supprimerMot(motSupprimer.trim().toUpperCase());
             JOptionPane.showMessageDialog(this, "Mot supprimé avec succès !");
+        }
+    }
+     private void afficherMots() {
+        JOptionPane.showMessageDialog(this, "Mots du dictionnaire : " + String.join(", ", dictionnaire.getMots()));
+    }
+     
+    private void changerMotDePasse(){
+        String nouveauMotDePasse = JOptionPane.showInputDialog(this, "Entrez le nouveau mot de passe :");
+        if (nouveauMotDePasse != null && !nouveauMotDePasse.trim().isEmpty()) {
+            motDePasseHache = motDePasseHache(nouveauMotDePasse);
+            enregistrerMotDePasse(motDePasseHache);
+            JOptionPane.showMessageDialog(this, "Mot de passe mis à jour !");
         }
     }
 }

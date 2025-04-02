@@ -12,7 +12,7 @@ import javax.swing.SwingUtilities;
  */
 public class Pendu {
     public static void main(String[] args) {
-        //SwingUtilities.invokeLater(PenduAffichage :: new);
+        SwingUtilities.invokeLater(PenduAffichage :: new);
         SwingUtilities.invokeLater(Administration::new);
     }
     
