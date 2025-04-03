@@ -21,7 +21,7 @@ public class DessinNiveauDifficile extends JPanel {
         // Effacer tout quand le slider est à 100
         view.eraserSlider.addChangeListener(e -> {
             if (view.eraserSlider.getValue() == 100) {
-                controller.clearDrawing(); // Utiliser la méthode du contrôleur
+                controller.clearDrawing();
                 view.eraserSlider.setValue(0);
             }
         });
@@ -33,17 +33,14 @@ public class DessinNiveauDifficile extends JPanel {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            // Créer un JFrame pour contenir le JPanel
             JFrame frame = new JFrame("Dessin Niveau Difficile");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 600);
             frame.setLocationRelativeTo(null);
 
-            // Ajouter le JPanel DessinNiveauDifficile
             DessinNiveauDifficile panel = new DessinNiveauDifficile();
             frame.add(panel);
 
-            // Rendre la fenêtre visible
             frame.setVisible(true);
         });
     }

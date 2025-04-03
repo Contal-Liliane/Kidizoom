@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MenuGeneral extends JFrame {
-    private JPanel mainPanel;
+
     private JPanel menuPanel;
     private boolean ardoiseActive = false;
     private boolean calculActive = false;
@@ -13,14 +13,18 @@ public class MenuGeneral extends JFrame {
     private DessinNiveauDifficile dessinDifficile;
     private CalculNiveauFacile calculFacile;
     private CalculNiveauDifficile calculDifficile;
+    private BackgroundPanel mainPanel;
 
-    // Constructeur du menu principal
     public MenuGeneral() {
         setTitle("Application Multi-Activités");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+
+        // Fond animé par défaut
+        mainPanel = new BackgroundPanel("background.jpg"); // Assurez-vous que cette image existe
+        mainPanel.setLayout(new BorderLayout());
 
         // Barre de menu
         menuPanel = new JPanel();
@@ -38,7 +42,6 @@ public class MenuGeneral extends JFrame {
         activitesMenu.add(ardoiseItem);
         activitesMenu.add(calculItem);
         activitesMenu.add(penduItem);
-
         activitesButton.addActionListener(e -> activitesMenu.show(activitesButton, 0, activitesButton.getHeight()));
 
         // Bouton "Niveau"
@@ -55,26 +58,30 @@ public class MenuGeneral extends JFrame {
         JButton adminButton = new JButton("Administration");
         adminButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Section administration en développement..."));
 
+        // Bouton "Retour à la base"
+        JButton retourButton = new JButton("Retour au menu");
+        retourButton.addActionListener(e -> resetToBase());
+
         // Ajout des boutons à la barre de menu
         menuPanel.add(activitesButton);
         menuPanel.add(niveauButton);
         menuPanel.add(adminButton);
+        menuPanel.add(retourButton);
         add(menuPanel, BorderLayout.NORTH);
 
-        // Zone principale
-        mainPanel = new JPanel();
-        mainPanel.setBackground(Color.WHITE);
+        // Ajout du fond animé
         add(mainPanel, BorderLayout.CENTER);
 
         // Actions des menus
         ardoiseItem.addActionListener(e -> setArdoiseMagique());
         calculItem.addActionListener(e -> setActiviteCalcul());
-        penduItem.addActionListener(e -> setJeuPendu()); // Action du Pendu
+        penduItem.addActionListener(e -> setJeuPendu());
         facileItem.addActionListener(e -> setNiveauFacile());
         difficileItem.addActionListener(e -> setNiveauDifficile());
+
+        setVisible(true); // Rendre la fenêtre visible
     }
 
-    // Afficher l'ardoise magique (niveau facile)
     private void setArdoiseMagique() {
         ardoiseActive = true;
         calculActive = false;
@@ -82,46 +89,45 @@ public class MenuGeneral extends JFrame {
         setNiveauFacile();
     }
 
-    // Afficher l'activité calcul (niveau facile)
     private void setActiviteCalcul() {
         calculActive = true;
         ardoiseActive = false;
         penduActive = false;
-        setNiveauFacile();
+
+        mainPanel.setBackgroundImage("creatif.jpg"); // Change l'image de fond pour le calcul
+        setNiveauFacile(); // Charge le niveau facile par défaut
     }
 
-    // Afficher le jeu du Pendu
     private void setJeuPendu() {
         penduActive = true;
         ardoiseActive = false;
         calculActive = false;
-        Pendu pendu = new Pendu(); // Créer une instance de Pendu (JPanel)
-        updateMainPanel(pendu);  // Mettre à jour le panel avec le jeu du Pendu
+        Pendu pendu = new Pendu();
+        updateMainPanel(pendu);
     }
 
-    // Afficher niveau facile
     private void setNiveauFacile() {
         if (ardoiseActive) {
             dessinFacile = new DessinNiveauFacile();
             updateMainPanel(dessinFacile);
         } else if (calculActive) {
             calculFacile = new CalculNiveauFacile();
+            mainPanel.setBackgroundImage("creatif.jpg"); // Change l'image de fond pour le calcul
             updateMainPanel(calculFacile);
         }
     }
 
-    // Afficher niveau difficile
     private void setNiveauDifficile() {
         if (ardoiseActive) {
             dessinDifficile = new DessinNiveauDifficile();
             updateMainPanel(dessinDifficile);
         } else if (calculActive) {
             calculDifficile = new CalculNiveauDifficile();
+            mainPanel.setBackgroundImage("creatif.jpg"); // Change l'image de fond pour le calcul
             updateMainPanel(calculDifficile);
         }
     }
 
-    // Mise à jour du panneau principal avec un nouveau panneau
     private void updateMainPanel(JPanel newPanel) {
         mainPanel.removeAll();
         mainPanel.add(newPanel, BorderLayout.CENTER);
@@ -129,7 +135,14 @@ public class MenuGeneral extends JFrame {
         mainPanel.repaint();
     }
 
+    private void resetToBase() {
+        mainPanel.setBackgroundImage("background.jpg"); // Remet l'image de base
+        mainPanel.removeAll(); // Supprime tous les composants affichés
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new MenuGeneral().setVisible(true));
+        SwingUtilities.invokeLater(() -> new MenuGeneral()); // Lancer l'application
     }
 }
