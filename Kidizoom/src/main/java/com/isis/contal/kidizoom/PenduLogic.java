@@ -68,5 +68,6 @@ public class PenduLogic {
     public void rejouerJeu() {
         lettresDevinees.clear();
         erreur = 0;
+        choisirMotRandom();
     }
 }
