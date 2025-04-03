@@ -14,9 +14,9 @@ public class CalculNiveauFacile extends JPanel {
     public CalculNiveauFacile() {
         setLayout(new BorderLayout());
 
-        // Panel principal (fond noir)
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(Color.BLACK);
+        // Panel principal avec fond animé
+        BackgroundPanel mainPanel = new BackgroundPanel("creatif.jpg");  // Assurez-vous que votre image est au bon endroit
+        mainPanel.setLayout(new BorderLayout());
 
         // Panel pour le calcul et la réponse
         JPanel calculPanel = new JPanel();
@@ -79,6 +79,9 @@ public class CalculNiveauFacile extends JPanel {
 
         // Ajout du panneau principal à l'interface
         add(mainPanel, BorderLayout.CENTER);
+
+        // Rafraîchir l'affichage après ajout de l'image de fond
+        mainPanel.repaint();
 
         // Actions des boutons
         boutonVerifier.addActionListener(e -> verifierReponse());

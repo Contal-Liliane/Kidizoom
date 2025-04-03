@@ -7,7 +7,6 @@ import java.io.*;
 import javax.imageio.ImageIO;
 
 public class DessinController {
-
     private DessinModel model;
     private DessinView view;
 
@@ -16,7 +15,7 @@ public class DessinController {
         this.view = view;
     }
 
-    // 🌟 Sauvegarde du dessin sous format PNG
+    // Sauvegarde du dessin sous format PNG
     public void saveDrawing() {
         String name = JOptionPane.showInputDialog(view, "Nom du dessin :");
         if (name != null && !name.trim().isEmpty()) {
@@ -30,7 +29,7 @@ public class DessinController {
         }
     }
 
-    // 📂 Chargement d'un dessin
+    // Chargement d'un dessin
     public void loadDrawing() {
         JFileChooser fileChooser = new JFileChooser(".");
         fileChooser.setDialogTitle("Charger un dessin");
@@ -50,7 +49,7 @@ public class DessinController {
         }
     }
 
-    // ❌ Suppression d'un dessin
+    // Suppression d'un dessin
     public void deleteDrawing() {
         JFileChooser fileChooser = new JFileChooser(".");
         fileChooser.setDialogTitle("Supprimer un dessin");
@@ -67,14 +66,14 @@ public class DessinController {
         }
     }
 
-    // 🧼 Effacer tout
+    // Effacer tout
     public void clearDrawing() {
         model.clear();
         view.repaint();
     }
 
+    // Changer la couleur du crayon
     public void setColor(Color color) {
         model.setCurrentColor(color);
     }
-
 }

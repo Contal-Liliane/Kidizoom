@@ -8,6 +8,7 @@ public class DessinView extends JPanel {
     protected DrawPanel drawPanel;
     protected JButton saveButton, loadButton, deleteButton, colorChooserButton, eraseButton;
     protected JSlider brushSizeSlider, eraserSizeSlider, eraserSlider;
+    protected JPanel colorPanel; // Assure-toi que le panel existe bien
 
     public DessinView(DessinController controller) {
         setLayout(new BorderLayout());
@@ -31,24 +32,27 @@ public class DessinView extends JPanel {
         controlPanel.add(deleteButton);
         mainPanel.add(controlPanel, BorderLayout.SOUTH);
 
-        // Panneau des couleurs
-        JPanel colorPanel = new JPanel();
-        // Création d'une palette de couleurs
-        JColorChooser colorChooser = new JColorChooser(Color.BLACK);
-        colorChooser.getSelectionModel().addChangeListener(e -> {
-            Color newColor = colorChooser.getColor();
-            controller.setColor(newColor); // Met à jour la couleur dans le modèle
+        //Création du panneau pour les couleurs
+        colorPanel = new JPanel(); // Initialisation correcte
+        colorPanel.setLayout(new FlowLayout()); // Ajoute une disposition pour voir les boutons
+
+        //Bouton "Choisir une couleur"
+        colorChooserButton = new JButton("Choisir une couleur");
+        colorChooserButton.addActionListener(e -> {
+            Color newColor = JColorChooser.showDialog(this, "Sélectionner une couleur", Color.BLACK);
+            if (newColor != null) {
+                controller.setColor(newColor); // Appliquer la couleur choisie
+            }
         });
 
-        JDialog colorDialog = JColorChooser.createDialog(this, "Choisir une couleur", true, colorChooser, null, null);
+        // Bouton gomme
+        eraseButton = new JButton("🧽 Gomme");
 
-        colorChooserButton = new JButton("Palette de Couleurs");
-        colorChooserButton.addActionListener(e -> colorDialog.setVisible(true));
-
-        eraseButton = new JButton("Gomme");
-
+        //Ajout des boutons au panneau des couleurs
         colorPanel.add(colorChooserButton);
         colorPanel.add(eraseButton);
+
+        //Ajout du panneau des couleurs en haut
         mainPanel.add(colorPanel, BorderLayout.NORTH);
 
         // Sliders (taille crayon, gomme, effacement)
@@ -64,8 +68,13 @@ public class DessinView extends JPanel {
         bottomPanel.add(new JLabel("Effacer tout:"));
         bottomPanel.add(eraserSlider);
 
+        //Ajout des composants à la fenêtre principale
         setPreferredSize(new Dimension(780, 500));
         add(mainPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
+
+        //Met à jour l'affichage pour éviter les erreurs de rendu
+        revalidate();
+        repaint();
     }
 }
