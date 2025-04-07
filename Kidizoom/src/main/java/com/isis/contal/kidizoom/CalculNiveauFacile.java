@@ -1,3 +1,4 @@
+
 package com.isis.contal.kidizoom;
 
 import javax.swing.*;
@@ -10,15 +11,14 @@ public class CalculNiveauFacile extends JPanel {
     private JButton boutonVerifier, boutonSolution, boutonNouveau, boutonSupprimer;
     private JSlider tailleSlider;
     private int resultatAttendu;
-    private BackgroundPanel mainPanel;
+    private BackgroundPanel backPanel;
 
     public CalculNiveauFacile() {
         setLayout(new BorderLayout());
 
         // Fond animé par défaut
-        mainPanel = new BackgroundPanel("creatif.jpg"); // Assurez-vous que cette image existe
-        mainPanel.setLayout(new BorderLayout());        
-
+        backPanel = new BackgroundPanel("creatif.jpg"); // Assurez-vous que cette image existe
+        backPanel.setLayout(new BorderLayout());        
 
         // Panel pour le calcul et la réponse
         JPanel calculPanel = new JPanel();
@@ -76,14 +76,14 @@ public class CalculNiveauFacile extends JPanel {
         calculPanel.add(tailleSlider, gbc);
 
         // Ajout du panneau de calcul au panneau principal
-        mainPanel.add(calculPanel, BorderLayout.CENTER);
+        backPanel.add(calculPanel, BorderLayout.CENTER);
         setPreferredSize(new Dimension(780, 500));
 
         // Ajout du panneau principal à l'interface
-        add(mainPanel, BorderLayout.CENTER);
+        add(backPanel, BorderLayout.CENTER);
 
         // Rafraîchir l'affichage après ajout de l'image de fond
-        mainPanel.repaint();
+        backPanel.repaint();
 
         // Actions des boutons
         boutonVerifier.addActionListener(e -> verifierReponse());
