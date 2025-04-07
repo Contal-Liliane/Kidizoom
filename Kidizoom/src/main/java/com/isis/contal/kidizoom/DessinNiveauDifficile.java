@@ -8,23 +8,20 @@ public class DessinNiveauDifficile extends JPanel {
     private DessinController controller;
 
     public DessinNiveauDifficile() {
-        // Création du modèle et du contrôleur
+        // Création du modèle
         DessinModel model = new DessinModel(780, 500);
-        controller = new DessinController(model, view);
-        view = new DessinView(controller);
+        
+        // Création du contrôleur et de la vue, et liaison entre eux
+        controller = new DessinController(model, null);  // Laisser la vue être initialisée après le contrôleur
+        view = new DessinView(controller);  // Passer le contrôleur à la vue après initialisation
+
+        // Initialisation de la vue
+        controller.getView();
 
         // Association des actions aux boutons
         view.saveButton.addActionListener(e -> controller.saveDrawing());
         view.loadButton.addActionListener(e -> controller.loadDrawing());
         view.deleteButton.addActionListener(e -> controller.deleteDrawing());
-
-        // Effacer tout quand le slider est à 100
-        view.eraserSlider.addChangeListener(e -> {
-            if (view.eraserSlider.getValue() == 100) {
-                controller.clearDrawing();
-                view.eraserSlider.setValue(0);
-            }
-        });
 
         // Layout
         setLayout(new BorderLayout());

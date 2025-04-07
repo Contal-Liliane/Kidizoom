@@ -10,13 +10,15 @@ public class CalculNiveauFacile extends JPanel {
     private JButton boutonVerifier, boutonSolution, boutonNouveau, boutonSupprimer;
     private JSlider tailleSlider;
     private int resultatAttendu;
+    private BackgroundPanel mainPanel;
 
     public CalculNiveauFacile() {
         setLayout(new BorderLayout());
 
-        // Panel principal avec fond animé
-        BackgroundPanel mainPanel = new BackgroundPanel("creatif.jpg");  // Assurez-vous que votre image est au bon endroit
-        mainPanel.setLayout(new BorderLayout());
+        // Fond animé par défaut
+        mainPanel = new BackgroundPanel("creatif.jpg"); // Assurez-vous que cette image existe
+        mainPanel.setLayout(new BorderLayout());        
+
 
         // Panel pour le calcul et la réponse
         JPanel calculPanel = new JPanel();

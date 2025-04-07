@@ -4,9 +4,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class DessinModel {
+
     private BufferedImage image;
     private Graphics2D g2d;
-    private Color currentColor = Color.BLACK;
+    Color currentColor = Color.BLACK;
     private int brushSize = 10;
 
     public DessinModel(int width, int height) {
