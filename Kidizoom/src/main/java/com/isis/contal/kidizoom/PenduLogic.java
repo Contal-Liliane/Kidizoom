@@ -54,7 +54,7 @@ public class PenduLogic {
     }
 
     public boolean siJeuFini() {
-        return erreur >= 6 || getMotSecret().replace(" ", "").equals(motSecret);
+        return erreur >= 9 || getMotSecret().replace(" ", "").equals(motSecret);
     }
 
     public boolean siJeuGagne() {
