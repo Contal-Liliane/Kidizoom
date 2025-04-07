@@ -27,16 +27,10 @@ public class DessinNiveauDifficile extends JPanel {
         // Bas : sauvegarder, charger, supprimer
         JPanel controlPanel = new JPanel();
         JButton saveButton = new JButton("Sauvegarder");
-        JButton loadButton = new JButton("Charger");
-        JButton deleteButton = new JButton("Supprimer");
 
         saveButton.addActionListener(e -> saveDrawing());
-        loadButton.addActionListener(e -> loadDrawing());
-        deleteButton.addActionListener(e -> deleteDrawing());
 
         controlPanel.add(saveButton);
-        controlPanel.add(loadButton);
-        controlPanel.add(deleteButton);
 
         mainPanel.add(controlPanel, BorderLayout.SOUTH);
         add(mainPanel, BorderLayout.CENTER);
@@ -115,50 +109,22 @@ public class DessinNiveauDifficile extends JPanel {
     public void saveDrawing() {
         String name = JOptionPane.showInputDialog(this, "Nom du dessin :");
         if (name != null && !name.trim().isEmpty()) {
-            try (FileOutputStream fos = new FileOutputStream(name + ".ser"); ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            File file = new File(name + ".ser");
+            if (file.exists()) {
+                int result = JOptionPane.showConfirmDialog(this,
+                        "Un dessin avec ce nom existe déjà. Voulez-vous l’écraser ?",
+                        "Confirmer l'écrasement",
+                        JOptionPane.YES_NO_OPTION);
+                if (result != JOptionPane.YES_OPTION) {
+                    return; // l’utilisateur a refusé d’écraser, on quitte
+                }
+            }
+            try (FileOutputStream fos = new FileOutputStream(file); ObjectOutputStream oos = new ObjectOutputStream(fos)) {
                 oos.writeObject(drawPanel.getImage());
-                JOptionPane.showMessageDialog(this, "Dessin sauvegardé !");
+                JOptionPane.showMessageDialog(this, "Dessin sauvegardé avec succès !");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    public void loadDrawing() {
-        File dir = new File(".");
-        String[] files = dir.list((d, name) -> name.endsWith(".ser"));
-        if (files != null && files.length > 0) {
-            String selectedFile = (String) JOptionPane.showInputDialog(this, "Choisissez un dessin :", "Charger un dessin",
-                    JOptionPane.PLAIN_MESSAGE, null, files, files[0]);
-            if (selectedFile != null) {
-                try (FileInputStream fis = new FileInputStream(selectedFile); ObjectInputStream ois = new ObjectInputStream(fis)) {
-                    drawPanel.setImage((Image) ois.readObject());
-                    JOptionPane.showMessageDialog(this, "Dessin chargé !");
-                } catch (IOException | ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Aucun dessin enregistré.");
-        }
-    }
-
-    public void deleteDrawing() {
-        File dir = new File(".");
-        String[] files = dir.list((d, name) -> name.endsWith(".ser"));
-        if (files != null && files.length > 0) {
-            String selectedFile = (String) JOptionPane.showInputDialog(this, "Choisissez un dessin à supprimer :",
-                    "Supprimer un dessin", JOptionPane.PLAIN_MESSAGE, null, files, files[0]);
-            if (selectedFile != null) {
-                File file = new File(selectedFile);
-                if (file.delete()) {
-                    JOptionPane.showMessageDialog(this, "Dessin supprimé !");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Échec de la suppression.");
-                }
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Aucun dessin enregistré.");
         }
     }
 
