@@ -10,7 +10,6 @@ public class BackgroundPanel extends JPanel {
     public BackgroundPanel(String imagePath) {
         setBackgroundImage(imagePath);
         
-        // Timer pour animer le fond
         Timer timer = new Timer(30, e -> moveBackground());
         timer.start();
     }
@@ -28,14 +27,13 @@ public class BackgroundPanel extends JPanel {
         if (xPosition <= -getWidth()) {
             xPosition = 0;
         }
-        repaint();  // Redessiner après chaque déplacement
+        repaint();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (backgroundImage != null) {
-            // Dessiner l'image en boucle
             g.drawImage(backgroundImage, xPosition, 0, getWidth(), getHeight(), this);
             g.drawImage(backgroundImage, xPosition + getWidth(), 0, getWidth(), getHeight(), this);
         }

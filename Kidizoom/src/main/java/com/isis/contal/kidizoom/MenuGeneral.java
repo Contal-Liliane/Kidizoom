@@ -22,9 +22,9 @@ public class MenuGeneral extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Fond animé par défaut
-        mainPanel = new BackgroundPanel("background.jpg"); // Assurez-vous que cette image existe
-        mainPanel.setLayout(new BorderLayout());
+        // Créer le panel principal avec un fond animé
+        mainPanel = new BackgroundPanel("background.jpg");
+        mainPanel.setLayout(new CardLayout());  // Définir le layout après la création du panel
 
         // Barre de menu
         menuPanel = new JPanel();
@@ -54,9 +54,19 @@ public class MenuGeneral extends JFrame {
         niveauMenu.add(difficileItem);
         niveauButton.addActionListener(e -> niveauMenu.show(niveauButton, 0, niveauButton.getHeight()));
 
-        // Bouton "Administration"
+        // Bouton pour accéder à l'administration
         JButton adminButton = new JButton("Administration");
-        adminButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Section administration en développement..."));
+        adminButton.addActionListener(e -> {
+            if (Administration.demanderMotDePasse(mainPanel)) {
+                CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
+                mainPanel.add(new Administration(), "adminPanel");
+                cardLayout.show(mainPanel, "adminPanel");  // Afficher le panneau d'administration
+                mainPanel.revalidate();  // Revalidate pour s'assurer que tout est correctement redessiné
+                mainPanel.repaint();  // Redessiner l'interface
+            } else {
+                JOptionPane.showMessageDialog(mainPanel, "Accès refusé !", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
         // Bouton "Retour à la base"
         JButton retourButton = new JButton("Retour au menu");
@@ -93,9 +103,7 @@ public class MenuGeneral extends JFrame {
         calculActive = true;
         ardoiseActive = false;
         penduActive = false;
-
-        mainPanel.setBackgroundImage("creatif.jpg"); // Change l'image de fond pour le calcul
-        setNiveauFacile(); // Charge le niveau facile par défaut
+        setNiveauFacile();
     }
 
     private void setJeuPendu() {
@@ -112,7 +120,6 @@ public class MenuGeneral extends JFrame {
             updateMainPanel(dessinFacile);
         } else if (calculActive) {
             calculFacile = new CalculNiveauFacile();
-            mainPanel.setBackgroundImage("creatif.jpg"); // Change l'image de fond pour le calcul
             updateMainPanel(calculFacile);
         }
     }
@@ -123,7 +130,6 @@ public class MenuGeneral extends JFrame {
             updateMainPanel(dessinDifficile);
         } else if (calculActive) {
             calculDifficile = new CalculNiveauDifficile();
-            mainPanel.setBackgroundImage("creatif.jpg"); // Change l'image de fond pour le calcul
             updateMainPanel(calculDifficile);
         }
     }
@@ -136,10 +142,10 @@ public class MenuGeneral extends JFrame {
     }
 
     private void resetToBase() {
-        mainPanel.setBackgroundImage("background.jpg"); // Remet l'image de base
-        mainPanel.removeAll(); // Supprime tous les composants affichés
+        mainPanel.setBackgroundImage("background.jpg");  // Remet l'image de fond
+        mainPanel.removeAll();  // Supprime tous les composants ajoutés (comme le panneau d'administration)
         mainPanel.revalidate();
-        mainPanel.repaint();
+        mainPanel.repaint();  // Redessiner l'interface
     }
 
     public static void main(String[] args) {
