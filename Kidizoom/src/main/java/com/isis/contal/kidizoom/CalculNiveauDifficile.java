@@ -10,13 +10,14 @@ public class CalculNiveauDifficile extends JPanel {
     private JButton boutonVerifier, boutonSolution, boutonNouveau, boutonSupprimer;
     private JSlider tailleSlider;
     private int resultatAttendu;
+    private BackgroundPanel backPanel;
 
     public CalculNiveauDifficile() {
         setLayout(new BorderLayout());
 
-        // Panel principal (fond noir)
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(Color.BLACK);
+        // Fond personnalisé avec image de fond
+        backPanel = new BackgroundPanel("creatif.jpg"); // Remplace par le chemin de ton image
+        backPanel.setLayout(new BorderLayout());
 
         // Panel pour le calcul et la réponse
         JPanel calculPanel = new JPanel();
@@ -74,11 +75,11 @@ public class CalculNiveauDifficile extends JPanel {
         calculPanel.add(tailleSlider, gbc);
 
         // Ajout du panneau de calcul au panneau principal
-        mainPanel.add(calculPanel, BorderLayout.CENTER);
+        backPanel.add(calculPanel, BorderLayout.CENTER);
         setPreferredSize(new Dimension(780, 500));
 
         // Ajout du panneau principal à l'interface
-        add(mainPanel, BorderLayout.CENTER);
+        add(backPanel, BorderLayout.CENTER);
 
         // Actions des boutons
         boutonVerifier.addActionListener(e -> verifierReponse());

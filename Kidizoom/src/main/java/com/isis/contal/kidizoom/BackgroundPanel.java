@@ -10,6 +10,7 @@ public class BackgroundPanel extends JPanel {
     public BackgroundPanel(String imagePath) {
         setBackgroundImage(imagePath);
         
+        // Lancer un timer pour déplacer l'arrière-plan
         Timer timer = new Timer(30, e -> moveBackground());
         timer.start();
     }

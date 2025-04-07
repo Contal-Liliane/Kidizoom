@@ -24,7 +24,7 @@ public class MenuGeneral extends JFrame {
 
         // Créer le panel principal avec un fond animé
         mainPanel = new BackgroundPanel("background.jpg");
-        mainPanel.setLayout(new CardLayout());  // Définir le layout après la création du panel
+        mainPanel.setLayout(new BorderLayout());  // Utilisation d'un BorderLayout pour gérer l'ajout des composants
 
         // Barre de menu
         menuPanel = new JPanel();
@@ -135,11 +135,11 @@ public class MenuGeneral extends JFrame {
     }
 
     private void updateMainPanel(JPanel newPanel) {
-        mainPanel.removeAll();
-        mainPanel.add(newPanel, BorderLayout.CENTER);
-        mainPanel.revalidate();
-        mainPanel.repaint();
-    }
+    mainPanel.removeAll();  // Supprimer les composants existants
+    mainPanel.add(newPanel, BorderLayout.CENTER);  // Ajouter le nouveau panneau
+    mainPanel.revalidate();  // Revalider l'affichage
+    mainPanel.repaint();  // Redessiner l'interface
+}
 
     private void resetToBase() {
         mainPanel.setBackgroundImage("background.jpg");  // Remet l'image de fond
