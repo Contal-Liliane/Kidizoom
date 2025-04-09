@@ -1,3 +1,6 @@
+/*
+Baptiste
+*/
 package com.isis.contal.kidizoom;
 
 import java.awt.*;
