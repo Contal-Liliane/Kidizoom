@@ -1,6 +1,5 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+Baptiste
  */
 package com.isis.contal.kidizoom;
 
@@ -31,11 +30,11 @@ public class PenduLogic {
     }
 
     public String getMotSecret() {
-        String maskedWord = "";
+        String motMasque = "";
         for (char c : motSecret.toCharArray()) {
-            maskedWord += (lettresDevinees.contains(c) ? c + " " : "_ ");
+            motMasque += (lettresDevinees.contains(c) ? c + " " : "_ ");
         }
-        return maskedWord.trim();
+        return motMasque.trim();
     }
 
     public String getMotOriginal() {
@@ -54,7 +53,8 @@ public class PenduLogic {
     }
 
     public boolean siJeuFini() {
-        return erreur >= 9 || getMotSecret().replace(" ", "").equals(motSecret);
+
+        return erreur >= 10 || getMotSecret().replace(" ", "").equals(motSecret);
     }
 
     public boolean siJeuGagne() {
