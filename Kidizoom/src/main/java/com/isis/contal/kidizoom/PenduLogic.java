@@ -53,6 +53,7 @@ public class PenduLogic {
     }
 
     public boolean siJeuFini() {
+
         return erreur >= 10 || getMotSecret().replace(" ", "").equals(motSecret);
     }
 
