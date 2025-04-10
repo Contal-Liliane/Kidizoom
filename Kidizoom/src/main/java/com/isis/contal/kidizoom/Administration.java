@@ -2,7 +2,7 @@
 Baptiste
 */
 package com.isis.contal.kidizoom;
-
+//Baptiste
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
