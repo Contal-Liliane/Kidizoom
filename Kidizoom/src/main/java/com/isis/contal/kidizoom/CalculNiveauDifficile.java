@@ -1,5 +1,7 @@
 package com.isis.contal.kidizoom;
 
+//Louis + support présentation oral
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.Random;

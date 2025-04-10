@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.isis.contal.kidizoom;
-
+//Baptiste
 import java.awt.Color;
 import java.awt.Graphics;
 import javax.swing.JPanel;

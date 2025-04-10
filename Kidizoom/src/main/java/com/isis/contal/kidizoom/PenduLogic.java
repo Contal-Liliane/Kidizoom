@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.isis.contal.kidizoom;
-
+//Baptiste
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
